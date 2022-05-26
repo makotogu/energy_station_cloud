@@ -1,6 +1,7 @@
 package com.gujiacheng.dataService.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.gujiacheng.dataService.controller.utils.R;
 import com.gujiacheng.dataService.controller.utils.chartUtils.Edata;
 import com.gujiacheng.dataService.controller.utils.chartUtils.Series;
@@ -8,6 +9,8 @@ import com.gujiacheng.dataService.pojo.EnergyStationData;
 import com.gujiacheng.dataService.service.EnergyStationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
@@ -32,108 +35,37 @@ public class EnergyStationController {
         return new R(true, energyStationService.list());
     }
 
-    /**
-     * 单独查询数据，针对温度
-     * @param limit 限制查询到的数据量
-     * @return 返回由温度构成的数据json
-     */
-    @GetMapping("/temp")
-    public R getTemperature(Integer limit) {
-        ArrayList<String> legends = new ArrayList<>();
-        legends.add("温度");
-        ArrayList<String> xSeries = new ArrayList<>();
-        ArrayList<Series> series = new ArrayList<>();
-        QueryWrapper<EnergyStationData> queryWrapper= new QueryWrapper<>();
-        queryWrapper.select("first_sampling_point_temperature","first_data_collection_time");
-        queryWrapper.last("limit "+limit.toString());
-        List<EnergyStationData> energyStationTempData = energyStationService.list(queryWrapper);
-        ArrayList<Object> sample = new ArrayList<>();
-        for (EnergyStationData data : energyStationTempData) {
-            xSeries.add(data.getFirstDataCollectionTime());
-            sample.add(data.getFirstSamplingPointTemperature());
-        }
-        Series tempSeries = new Series(legends.get(0), "line", sample);
-        series.add(tempSeries);
-        Edata edata = new Edata(legends, xSeries, series);
-        return new R(true, edata);
+    @GetMapping("/query/{page}/{size}")
+    public R getPage(@PathVariable("page") Integer page,
+                     @PathVariable("size") Integer size,
+                     @RequestParam(value = "target", defaultValue = "all") String target,
+                     @RequestParam(value = "orderTarget", defaultValue = "all") String orderTarget,
+                     @RequestParam(value = "order", defaultValue = "true") Boolean order,
+                     @RequestParam(value = "key", defaultValue = "none") String key) {
+
+        Page<EnergyStationData> pagedContents = energyStationService.getPagedContents(page, size, target, orderTarget, order, key);
+        return new R(true, pagedContents);
     }
 
-    /**
-     * 单独查询数据，针对风速以及风向
-     * @param limit 限制查询到的数据量
-     * @return 返回由温度构成的数据json
-     */
-    @GetMapping("/wind")
-    public R getWind(Integer limit) {
-        ArrayList<String> legends = new ArrayList<>();
-        legends.add("风速");
-        legends.add("风向");
-        ArrayList<String> xSeries = new ArrayList<>();
-        ArrayList<Series> series = new ArrayList<>();
-        QueryWrapper<EnergyStationData> queryWrapper= new QueryWrapper<>();
-        queryWrapper.select("first_sampling_point_wind_speed","first_sampling_point_wind_direction","first_data_collection_time");
-        queryWrapper.last("limit "+limit.toString());
-        List<EnergyStationData> energyStationTempData = energyStationService.list(queryWrapper);
-        for (EnergyStationData data : energyStationTempData) {
-            xSeries.add(data.getFirstDataCollectionTime());
+    @GetMapping("/charts/{struct}")
+    public R getChart(@PathVariable("struct") String struct) {
+        switch (struct) {
+            case "ZHANG_JIANG": {
+                return new R(true, energyStationService.getZhangJiangChart());
+            }
+            case "WAI_GAO_QIAO": {
+                return new R(true, energyStationService.getWaiGaoQiaoChart());
+            }
+            case "XIN_HONG_QIAO": {
+                return new R(true, energyStationService.getXinHongQiaoChart());
+            }
+            default: {
+                return new R(false);
+            }
         }
-        ArrayList<Object> sample = new ArrayList<>();
-        for (EnergyStationData data : energyStationTempData) {
-            sample.add(data.getFirstSamplingPointWindSpeed());
-        }
-        series.add(new Series(legends.get(0), "line", sample));
-        sample = new ArrayList<>();
-        for (EnergyStationData data : energyStationTempData) {
-            sample.add(data.getFirstSamplingPointWindSpeed());
-        }
-        series.add(new Series(legends.get(1), "line", sample));
-        return new R(true, new Edata(legends, xSeries, series));
     }
-    /**
-     * 单独查询数据，针对电压查询
-     * @param limit 限制查询到的数据量
-     * @return 返回由温度构成的数据json
-     */
-    @GetMapping("/battery")
-    public R getBattery(Integer limit) {
-        ArrayList<String> legends = new ArrayList<>();
-        legends.add("电压");
-        ArrayList<String> xSeries = new ArrayList<>();
-        ArrayList<Series> series = new ArrayList<>();
-        QueryWrapper<EnergyStationData> queryWrapper= new QueryWrapper<>();
-        queryWrapper.select("battery_voltage","first_data_collection_time");
-        queryWrapper.last("limit "+limit.toString());
-        List<EnergyStationData> energyStationTempData = energyStationService.list(queryWrapper);
-        ArrayList<Object> sample = new ArrayList<>();
-        for (EnergyStationData data : energyStationTempData) {
-            xSeries.add(data.getFirstDataCollectionTime());
-            sample.add(data.getBatteryVoltage());
-        }
-        Series tempSeries = new Series(legends.get(0), "line", sample);
-        series.add(tempSeries);
-        Edata edata = new Edata(legends, xSeries, series);
-        return new R(true, edata);
-    }
-    @GetMapping("/pressure")
-    public R getPressure(Integer limit) {
-        ArrayList<String> legends = new ArrayList<>();
-        legends.add("气压");
-        ArrayList<String> xSeries = new ArrayList<>();
-        ArrayList<Series> series = new ArrayList<>();
-        QueryWrapper<EnergyStationData> queryWrapper= new QueryWrapper<>();
-        queryWrapper.select("first_sampling_point_atmospheric_pressure","first_data_collection_time");
-        queryWrapper.last("limit "+limit.toString());
-        List<EnergyStationData> energyStationTempData = energyStationService.list(queryWrapper);
-        ArrayList<Object> sample = new ArrayList<>();
-        for (EnergyStationData data : energyStationTempData) {
-            xSeries.add(data.getFirstDataCollectionTime());
-            sample.add(data.getFirstSamplingPointAtmosphericPressure());
-        }
-        Series tempSeries = new Series(legends.get(0), "line", sample);
-        series.add(tempSeries);
-        Edata edata = new Edata(legends, xSeries, series);
-        return new R(true, edata);
-    }
+
+
 
     @GetMapping("/test")
     public R testUtils() {

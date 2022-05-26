@@ -9,21 +9,21 @@ import lombok.Data;
  *
  */
 @Data
-@TableName("neng_yuan_zhan")
+@TableName("neng_yuan_zhan_1")
 public class EnergyStationData {
-    private String collectNode;
-    private String nodeType;
-    private String nodeStatus;
-    private String batteryVoltage;
-    private String dataNumber;
-    private String dataLength;
+    private Integer collectNode;
+    private Integer nodeType;
+    private Integer nodeStatus;
+    private Integer batteryVoltage;
+    private Integer dataNumber;
+    private Integer dataLength;
     private String firstDataCollectionTime;
-    private String collectInterval;
-    private String firstSamplingPointTemperature;
-    private String firstSamplingPointHumidity;
+    private Integer collectInterval;
+    private Double firstSamplingPointTemperature;
+    private Integer firstSamplingPointHumidity;
+    private Double firstSamplingPointAtmosphericPressure;
+    private Integer firstSamplingPointWindSpeed;
+    private String firstSamplingPointWindDirection;
     private String receiveTime;
     private String softwareVersionNumber;
-    private String firstSamplingPointAtmosphericPressure;
-    private String firstSamplingPointWindSpeed;
-    private String firstSamplingPointWindDirection;
 }

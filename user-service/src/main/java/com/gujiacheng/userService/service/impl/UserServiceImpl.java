@@ -17,4 +17,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public User userCheck(String username, String password) {
         return userMapper.selectByUsernameAndPassword(username, password);
     }
+
+    @Override
+    public User userRegister(String username, String password) {
+        User newUser = new User();
+        newUser.setId(username);
+        newUser.setPassword(password);
+        userMapper.insert(newUser);
+        return newUser;
+    }
 }

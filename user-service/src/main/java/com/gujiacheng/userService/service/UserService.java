@@ -12,4 +12,6 @@ public interface UserService extends IService<User> {
      * @return 返回检查结果
      */
     User userCheck(String username, String password);
+
+    User userRegister(String username, String password);
 }

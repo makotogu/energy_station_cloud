@@ -7,15 +7,21 @@ spring:
     gateway:
       routes:
         - id: user-service
-          uri: lb://USERSERVICE
+          uri: lb://user-service
           predicates:
             - Path=/user/**
           filters:
             - StripPrefix=1
         - id: data-service
-          uri: lb://DATASERVICE
+          uri: lb://data-service
           predicates:
             - Path=/data/**
+          filters:
+            - StripPrefix=1
+        - id: system-status-service
+          uri: lb://system-status-service
+          predicates:
+            - Path=/system/**
           filters:
             - StripPrefix=1
       globalcors:
@@ -26,11 +32,13 @@ spring:
             allowedOriginPatterns: "*"
             allowedMethods: "*"
             allowedHeaders: "*"
-
-eureka:
-  client:
-    service-url:
-      defaultZone: http://127.0.0.1:8081/eureka
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+    nacos:
+      discovery:
+        server-addr: 101.35.83.193:8848
 logging:
   level:
     org.springframework.cloud.gateway: debug

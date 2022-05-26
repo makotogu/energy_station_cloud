@@ -1,0 +1,11 @@
+server:
+  port: 8085
+spring:
+  application:
+    name: command-service
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 101.35.83.193:8848
+      config:
+        server-addr: 101.35.83.193.8848

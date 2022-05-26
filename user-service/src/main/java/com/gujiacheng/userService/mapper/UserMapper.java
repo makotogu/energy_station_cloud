@@ -14,6 +14,6 @@ public interface UserMapper extends BaseMapper<User> {
      * @param password 密码
      * @return 返回用户entity
      */
-    @Select("select * from user where username = #{username} and password = #{password}")
+    @Select("select * from user where id = #{username} and password = #{password}")
     User selectByUsernameAndPassword (String username, String password);
 }

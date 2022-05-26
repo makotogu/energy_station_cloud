@@ -17,4 +17,5 @@ public class R {
         this.flag = flag;
         this.data = data;
     }
+
 }

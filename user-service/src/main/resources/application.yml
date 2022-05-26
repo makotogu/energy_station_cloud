@@ -1,17 +1,21 @@
 server:
   port: 8082
-eureka:
-  client:
-    service-url:
-      defaultZone: http://127.0.0.1:8081/eureka
+#eureka:
+#  client:
+#    service-url:
+#      defaultZone: http://127.0.0.1:8081/eureka
 spring:
   application:
-    name: userservice
+    name: user-service
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/energy_station?serverTimezone=UTC
     username: root
     password: admin
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 101.35.83.193:8848
 mybatis-plus:
   global-config:
     db-config:
